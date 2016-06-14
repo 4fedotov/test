@@ -12,9 +12,7 @@ public class ScheduledRunner implements Runnable {
         try {
             mainLoop();
         } finally {
-            synchronized(queue) {
-                queue.clear();
-            }
+            queue.clear();
         }
     }
 
