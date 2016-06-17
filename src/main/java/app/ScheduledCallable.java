@@ -3,12 +3,13 @@ package app;
 import java.util.Date;
 import java.util.concurrent.Callable;
 
-public class ScheduledCallable
+// immutable in terms of Date
+public final class ScheduledCallable
         implements Comparable<ScheduledCallable> {
 
     public ScheduledCallable(Callable callable, Date date) {
         this.callable = callable;
-        this.date = date;
+        this.date = new Date(date.getTime());
     }
 
     public void call() throws Exception {
@@ -24,9 +25,9 @@ public class ScheduledCallable
     }
 
     public Date getDate() {
-        return date;
+        return new Date(date.getTime());
     }
 
-    private Callable callable;
-    private Date date;
+    private final Callable callable;
+    private final Date date;
 }
