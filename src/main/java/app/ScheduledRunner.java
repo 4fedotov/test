@@ -34,6 +34,7 @@ public class ScheduledRunner implements Runnable {
                     continue;
                 if (entry.getEntry().getDate().getTime() > System.currentTimeMillis()) {
                     queue.add(entry);
+                    // todo: sleep (next time - current) or wait for notification in "add" ?
                     continue;
                 }
                 entry.getEntry().getCallable().call();
