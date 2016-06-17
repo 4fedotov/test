@@ -26,5 +26,6 @@ public class App {
         runner.add(c2, new Date(System.currentTimeMillis()));
         runner.add(c1, d);
         // expected order: 2 3 1
+
     }
 }
