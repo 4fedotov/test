@@ -27,5 +27,12 @@ public class App {
         runner.add(c1, d);
         // expected order: 2 3 1
 
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        runner.interrupt();
     }
 }

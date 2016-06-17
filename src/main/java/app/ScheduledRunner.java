@@ -3,6 +3,7 @@ package app;
 import java.util.Date;
 import java.util.concurrent.Callable;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public class ScheduledRunner implements Runnable {
 
@@ -26,26 +27,22 @@ public class ScheduledRunner implements Runnable {
 
     private void mainLoop() {
 
-        while (!needStop) {
-            try {
-
-                if (queue.isEmpty()) {
-                    queue.wait(WAIT_QUEUE_TIMEOUT);
+        try {
+            while (!needStop) {
+                FIFOEntry<ScheduledCallable> entry = queue.poll(WAIT_QUEUE_TIMEOUT, TimeUnit.MILLISECONDS);
+                if (null == entry)
+                    continue;
+                if (entry.getEntry().getDate().getTime() > System.currentTimeMillis()) {
+                    queue.add(entry);
                     continue;
                 }
-
-                FIFOEntry<ScheduledCallable> entry = queue.peek();
-                if (entry.getEntry().getDate().getTime() > System.currentTimeMillis())
-                    continue;
-
-                entry = queue.take();
                 entry.getEntry().getCallable().call();
-
-            } catch(InterruptedException exc) {
-                // process exc
-            } catch(Exception exc) {
-                // process exc
             }
+        } catch(InterruptedException exc) {
+            // process exc
+        }
+        catch(Exception exc) {
+            // process exc
         }
     }
 
