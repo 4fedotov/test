@@ -17,9 +17,7 @@ public class ScheduledRunner implements Runnable {
     }
 
     public void interrupt() {
-        if (thisThread != null) {
-            thisThread.interrupt();
-        }
+        needStop = true;
     }
 
     public void add(Callable callable, Date date) {
@@ -28,12 +26,13 @@ public class ScheduledRunner implements Runnable {
 
     private void mainLoop() {
 
-        thisThread = Thread.currentThread();
-
-        while (!thisThread.isInterrupted()) {
+        while (!needStop) {
             try {
-                while (queue.isEmpty())
-                    queue.wait();
+
+                if (queue.isEmpty()) {
+                    queue.wait(WAIT_QUEUE_TIMEOUT);
+                    continue;
+                }
 
                 FIFOEntry<ScheduledCallable> entry = queue.peek();
                 if (entry.getEntry().getDate().getTime() > System.currentTimeMillis())
@@ -50,7 +49,9 @@ public class ScheduledRunner implements Runnable {
         }
     }
 
-    private volatile Thread thisThread;
+    private static final long WAIT_QUEUE_TIMEOUT = 1000;
+
+    private volatile boolean needStop = false;
 
     private PriorityBlockingQueue<FIFOEntry<ScheduledCallable>> queue
             = new PriorityBlockingQueue<FIFOEntry<ScheduledCallable>>();
